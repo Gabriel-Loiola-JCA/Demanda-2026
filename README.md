@@ -1,91 +1,71 @@
-# Estudo de Poltronas
+# Radar de Demanda 2026
 
-Painel estático que lê um CSV de vendas de passagens e responde, com evidência, **quais poltronas vendem antes — e primeiro**. Reconstrói cada viagem, ordena as compras, desenha o mapa de calor sobre a planta do veículo e simula o ganho de um reajuste.
+Painel interativo para acompanhamento dos principais eventos, feriados, shows, festivais, provas, feiras e jogos com potencial de impacto sobre a demanda de viagens no segundo semestre de 2026.
 
-Roda inteiramente no navegador: **nenhum dado sai da máquina**. Sem back-end, sem build, sem dependências.
+## Acessar o painel
 
-Criado por Gabriel Loiola.
+**Site:** [gabriel-loiola-jca.github.io/Demanda-2026](https://gabriel-loiola-jca.github.io/Demanda-2026/)
 
----
+## Funcionalidades
 
-## Como publicar no GitHub Pages
+- Identifica automaticamente a data local do dispositivo do usuário.
+- Apresenta os três eventos atuais ou futuros mais próximos.
+- Prioriza eventos em andamento e datas com maior pressão potencial sobre a demanda.
+- Oculta eventos encerrados da agenda por padrão, sem apagar o histórico.
+- Permite consultar eventos anteriores pelo botão **Mostrar passados**.
+- Disponibiliza filtros por categoria, praça, região, fonte e período.
+- Exibe calendário diário com índice de pressão de demanda.
+- Reúne fontes públicas e referências para conferência dos dados.
+- Inclui eventos relevantes como Rock in Rio, Oktoberfest, Semana Farroupilha, feriados nacionais, vestibulares, concursos e partidas de futebol.
 
-1. Crie o repositório e suba estes arquivos na raiz.
-2. Em **Settings → Pages**, escolha `Deploy from a branch`, branch `main`, pasta `/ (root)`.
-3. Pronto. O site abre em `https://<usuario>.github.io/<repo>/`.
+## Como o índice deve ser interpretado
 
-Todos os caminhos são relativos (`./assets/...`), então o site funciona em subpasta sem ajuste. O arquivo `.nojekyll` impede o Jekyll de ignorar diretórios.
+O índice de pressão de demanda é uma pontuação comparativa de 0 a 100. Ele considera:
 
-## Cache
+- volume de público exposto;
+- potencial de utilização do transporte rodoviário;
+- direção do fluxo entre as cidades;
+- concentração da demanda em poucos dias ou horários;
+- sobreposição com feriados e outros grandes eventos.
 
-`sw.js` é um service worker com estratégia *stale-while-revalidate*: a página abre instantaneamente do cache e se atualiza em segundo plano. Depois do primeiro acesso, funciona offline.
+O índice indica prioridade relativa para análise. Ele não representa uma previsão percentual de crescimento e não garante aumento de demanda.
 
-**A cada deploy, suba a versão** no topo do `sw.js`:
+## Atualização automática por data
 
-```js
-const VERSION = 'v5.0.1';
+O painel utiliza a data configurada no computador ou celular de quem acessa o site. Eventos cuja data final já passou ficam ocultos na agenda principal, mas continuam armazenados no arquivo e podem ser consultados selecionando **Mostrar passados**.
+
+## Fontes e atualização dos dados
+
+As informações são consolidadas a partir de fontes públicas, incluindo organizadores, bilheterias, prefeituras, federações esportivas, bancas de concursos e imprensa.
+
+Datas, locais, públicos e programações podem mudar. Antes de utilizar uma informação em uma decisão comercial, recomenda-se abrir a fonte indicada no painel e confirmar os dados mais recentes.
+
+## Estrutura do projeto
+
+```text
+.
+├── index.html   # Aplicação completa, estilos, dados e scripts
+└── README.md    # Documentação do projeto
 ```
 
-O `activate` apaga sozinho os caches de versões anteriores. Sem isso, o navegador continua servindo a versão antiga.
+O projeto não exige instalação, servidor de aplicação ou banco de dados. Todo o conteúdo necessário para executar o painel está dentro do arquivo `index.html`.
 
-## Estrutura
+## Executar localmente
 
+Basta abrir o arquivo `index.html` em um navegador moderno.
+
+Opcionalmente, é possível iniciar um servidor local:
+
+```bash
+python -m http.server 8000
 ```
-index.html                  markup e diálogos
-assets/css/app.css          folha única, com tokens de tema
-assets/js/engine.js         leitura de CSV, plantas, métricas, XLSX e PDF
-assets/js/app.js            interface, estado, ajustes e gráficos
-sw.js                       cache
-manifest.webmanifest        instalação como app
-```
 
-## Cor
+Depois, acesse `http://localhost:8000`.
 
-A interface é **neutra por decisão de projeto** — preto, branco e grafite. A cor fica reservada ao mapa de calor, que é o único lugar onde ela carrega significado.
+## Publicação
 
-Em **Ajustes** (engrenagem no cabeçalho) dá para configurar:
+O site é publicado pelo GitHub Pages a partir da branch `main` e da pasta raiz do repositório. Cada atualização enviada para o `index.html` gera uma nova publicação do painel.
 
-| Opção | O que faz |
-|---|---|
-| Escala do mapa | nove paletas, incluindo uma em cinza para impressão em P&B |
-| Misturar duas cores | monte o degradê com duas cores próprias em vez de usar uma escala pronta |
-| Inverter a intensidade | quem vende mais fica quase transparente, e a cor cheia marca as poltronas fracas — para caçar ociosidade em vez de confirmar campeãs |
-| Sensibilidade | quanto a cor muda entre poltronas de valores próximos |
-| Referência da escala | `0 → máximo`, `mínimo → máximo` ou `posição no ranking` |
-| Marcar o top 5 | contorno neutro nas cinco poltronas do ranking ativo |
-| Tingir a interface | opcional: botões e barras adotam a cor do mapa |
-| Tema claro · brilho de fundo | aparência geral |
-| Cor no PDF | desligado, o relatório sai em escala de cinza |
+## Responsável
 
-Tudo é gravado em `localStorage` e vale para os próximos estudos.
-
-### Quando o mapa fica todo da mesma cor
-
-É o caso comum de operação madura: quase toda poltrona vende em quase toda viagem, os valores se amontoam no topo e o degradê não tem o que separar. Duas saídas, ambas em **Ajustes → Escala**:
-
-- **Referência `mínimo → máximo`** estica a escala entre o pior e o melhor valor do recorte, em vez de partir do zero.
-- **Referência `posição no ranking`** ignora a distância entre os valores e distribui as cores pela ordem — a diferença visual fica sempre visível, mesmo que a diferença real seja pequena.
-
-A **sensibilidade** aplica uma curva por cima de qualquer uma das três. Vale lembrar do custo: quanto mais se estica a escala, mais uma diferença irrelevante parece grande. Para decidir preço, olhe o número na tabela, não só a cor.
-
-## Dados
-
-O CSV precisa de **poltrona**, **data da venda** e algo que identifique a **viagem**. Colunas de serviço, classe, canal, origem/destino e receita são opcionais e ativam filtros, detecção de planta e a simulação de preço.
-
-**A ordem das colunas não importa.** O motor localiza cada uma pelo nome do cabeçalho, tolerando acento, maiúscula, `º`, e separadores (`_`, `.`, `-`, `/`) — `Data Venda`, `data_venda` e `DATA DA VENDA` são a mesma coisa. Colunas desconhecidas são ignoradas sem reclamar.
-
-Todo arquivo analisado entra no histórico automaticamente, e o painel pede um nome logo em seguida. Os estudos ficam em IndexedDB, no próprio navegador.
-
-## Simulação
-
-Dois modos: **percentual** sobre o preço médio pago, ou **valor fixo em reais** somado a cada bilhete. Em ambos, o painel mostra o ganho no recorte, a projeção em 1, 6 e 12 meses e a **margem de segurança** — quanto da venda a operação suporta perder antes de empatar com a receita de hoje.
-
-O bloco **Recomendação**, na visão executiva, traduz isso em uma frase e sugere as três poltronas com melhor índice de oportunidade.
-
-## Relatório em PDF
-
-O PDF é um retrato da tela no momento em que foi gerado: a métrica ativa no mapa, o ranking selecionado, os filtros aplicados e a mesma escala de cor — inclusive inversão e sensibilidade. Trocar a métrica e exportar de novo produz um relatório diferente.
-
-## Limites
-
-A simulação de reajuste é **determinística sobre dados observados**: aplica um percentual à receita já realizada e mostra quanto de venda o aumento suportaria perder antes de empatar. Ela não estima elasticidade nem prevê a reação da concorrência — a retenção de demanda é uma premissa explícita do usuário, e por isso aparece na tela e no relatório.
+Criado por **Gabriel Loiola**.
