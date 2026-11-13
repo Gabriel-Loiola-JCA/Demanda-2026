@@ -7,113 +7,372 @@
 <meta name="description" content="Radar de Demanda: shows, festivais, feriados, provas e jogos que movimentam viagens. Revenue · Grupo JCA.">
 <title>Radar de Demanda</title>
 <link rel="icon" href="marca/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Radar no padrão do HELIOS: preto absoluto, um destaque dourado, tudo arredondado. */
+/* Radar de Demanda · padrão HELIOS: preto absoluto, um destaque dourado, traço fino, movimento suave. */
 :root {
-  --bg: #0b0b0c; --surface: rgba(255,255,255,.04); --surface-2: rgba(255,255,255,.07); --solid: #151517;
-  --ink: #f4f2ec; --ink-2: #c9c7c0; --muted: #8e8c86; --line: rgba(244,242,236,.10); --line-2: rgba(244,242,236,.18);
-  --accent: #d9a94e; --accent-soft: rgba(217,169,78,.14); --lo: #6f9e91; --mid: #c7a25a; --hi: #c47a6c;
-  --font: "Segoe UI Variable Text", "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
-  --r: 18px; --r-lg: 24px; color-scheme: dark;
+  --bg: #0b0b0c; --bg-2: #111113; --surface: rgba(255,255,255,.028); --surface-2: rgba(255,255,255,.055); --solid: #141416;
+  --ink: #f2f0ea; --ink-2: #c8c5bd; --muted: #85837d; --faint: rgba(242,240,234,.055); --line: rgba(242,240,234,.085); --line-2: rgba(242,240,234,.16);
+  --accent: #d9a94e; --accent-2: #e6c07a; --accent-soft: rgba(217,169,78,.12); --glow: rgba(217,169,78,.20);
+  --lo: #6f9e91; --mid: #c9a05a; --hi: #c47a6c;
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1); --io: cubic-bezier(.65,0,.35,1); --r: 14px; --r-lg: 20px; color-scheme: dark;
 }
 :root[data-theme="light"] {
-  --bg: #f4f3ef; --surface: rgba(0,0,0,.035); --surface-2: rgba(0,0,0,.06); --solid: #ffffff;
-  --ink: #161616; --ink-2: #3a3a3c; --muted: #6f6d67; --line: rgba(20,20,20,.10); --line-2: rgba(20,20,20,.18);
-  --accent: #9a7434; --accent-soft: rgba(154,116,52,.12); --lo: #4f8a7c; --mid: #a7802f; --hi: #b06656; color-scheme: light;
+  --bg: #f5f4f0; --bg-2: #edece6; --surface: rgba(0,0,0,.025); --surface-2: rgba(0,0,0,.05); --solid: #ffffff;
+  --ink: #151515; --ink-2: #3b3b3d; --muted: #75736d; --faint: rgba(20,20,20,.045); --line: rgba(20,20,20,.09); --line-2: rgba(20,20,20,.16);
+  --accent: #9a7434; --accent-2: #8a6526; --accent-soft: rgba(154,116,52,.10); --glow: rgba(154,116,52,.12);
+  --lo: #4f8a7c; --mid: #a7802f; --hi: #b06656; color-scheme: light;
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]):not([data-theme="light"]) {
-  --bg: #f4f3ef; --surface: rgba(0,0,0,.035); --surface-2: rgba(0,0,0,.06); --solid: #ffffff;
-  --ink: #161616; --ink-2: #3a3a3c; --muted: #6f6d67; --line: rgba(20,20,20,.10); --line-2: rgba(20,20,20,.18);
-  --accent: #9a7434; --accent-soft: rgba(154,116,52,.12); --lo: #4f8a7c; --mid: #a7802f; --hi: #b06656; color-scheme: light; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme]) {
+  --bg: #f5f4f0; --bg-2: #edece6; --surface: rgba(0,0,0,.025); --surface-2: rgba(0,0,0,.05); --solid: #ffffff;
+  --ink: #151515; --ink-2: #3b3b3d; --muted: #75736d; --faint: rgba(20,20,20,.045); --line: rgba(20,20,20,.09); --line-2: rgba(20,20,20,.16);
+  --accent: #9a7434; --accent-2: #8a6526; --accent-soft: rgba(154,116,52,.10); --glow: rgba(154,116,52,.12);
+  --lo: #4f8a7c; --mid: #a7802f; --hi: #b06656; color-scheme: light; } }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
-body { min-height: 100vh; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font); -webkit-font-smoothing: antialiased;
-  background-image: radial-gradient(1100px 600px at 90% -10%, var(--accent-soft), transparent 60%); background-attachment: fixed; }
+body { min-height: 100vh; background: var(--bg); color: var(--ink); font: 13.5px/1.55 var(--font); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background: radial-gradient(1100px 640px at 86% -14%, var(--glow), transparent 62%), radial-gradient(900px 600px at -12% 108%, var(--faint), transparent 60%); animation: breathe 14s ease-in-out infinite alternate; }
+@keyframes breathe { to { transform: translate(-30px, 18px) scale(1.04); } }
+body::after { content: ""; position: fixed; inset: -60px; z-index: -1; pointer-events: none; opacity: .04; animation: grain 1.6s steps(6) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+@keyframes grain { 0%{transform:translate(0,0)} 25%{transform:translate(-16px,10px)} 50%{transform:translate(12px,-18px)} 75%{transform:translate(-8px,-6px)} 100%{transform:translate(0,0)} }
 button, select, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.wrap { max-width: 980px; margin: 0 auto; padding: 28px max(18px, env(safe-area-inset-right)) 40px max(18px, env(safe-area-inset-left)); }
-body.embed .wrap { max-width: none; padding-top: 18px; }
+:focus-visible { outline: 1.5px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 max(22px, env(safe-area-inset-right)) 56px max(22px, env(safe-area-inset-left)); }
+.ico { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* entrada em sequência, como na apresentação do HELIOS */
+.rv { opacity: 0; filter: blur(8px); transform: translateY(14px); transition: opacity .9s var(--ease), filter .9s var(--ease), transform 1.1s var(--ease); transition-delay: calc(var(--i, 0) * 55ms); }
+.rv.in { opacity: 1; filter: none; transform: none; }
+.words .w { display: inline-block; opacity: 0; filter: blur(10px); transform: translateY(.22em); transition: opacity .8s var(--ease), filter .8s var(--ease), transform 1s var(--ease); transition-delay: calc(var(--i) * 60ms + 120ms); }
+.words.in .w { opacity: 1; filter: none; transform: none; }
+.eyebrow { display: inline-flex; align-items: center; gap: 12px; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .26em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--accent); transform-origin: left; animation: line 1.2s var(--ease) both .2s; }
+@keyframes line { from { transform: scaleX(0); } }
 
 /* topo */
-.top { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
-.top img { height: 26px; width: auto; }
-.top h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
-.top small { display: block; color: var(--muted); font-size: 12.5px; letter-spacing: 0; font-weight: 400; }
+.top { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 14px 0 12px; background: linear-gradient(var(--bg) 62%, transparent); }
+.brand { display: flex; align-items: center; gap: 11px; color: inherit; text-decoration: none; }
+.brand img { height: 18px; width: auto; }
+.brand b { font-size: 11px; font-weight: 600; letter-spacing: .34em; text-transform: uppercase; }
 .top .sp { flex: 1; }
-body.embed .top img { display: none; }
+.seg { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.seg button { position: relative; height: 28px; padding: 0 12px; border: 0; border-radius: 999px; background: none; color: var(--muted); font-size: 12.5px; font-weight: 500; white-space: nowrap; transition: color .25s, background .3s var(--ease); }
+.seg button.on { background: var(--surface-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2); }
+.seg button:hover:not(.on) { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 13px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--ink-2); font-size: 12.5px; font-weight: 500; text-decoration: none; transition: border-color .25s, color .25s, background .25s, transform .3s var(--ease); }
+.btn:hover { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); transform: translateY(-1px); }
+body.embed .brand { visibility: hidden; }
 
-/* "o que temos" */
-.ask { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.seg { display: inline-flex; padding: 4px; gap: 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
-.seg button { height: 34px; padding: 0 15px; border: 0; border-radius: 999px; background: none; color: var(--ink-2); font-weight: 500; white-space: nowrap; }
-.seg button.on { background: var(--ink); color: var(--bg); }
-.seg button:hover:not(.on) { background: var(--surface-2); color: var(--ink); }
-.pick { height: 42px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink-2); }
+/* fita dos próximos eventos */
+.ticker { display: flex; align-items: center; gap: 14px; height: 34px; margin: 2px 0 8px; padding: 0 4px 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); overflow: hidden; }
+.ticker em { flex: none; font-style: normal; color: var(--accent-2); font-size: 10px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; }
+.ticker .lane { flex: 1; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.ticker .run { display: inline-flex; gap: 30px; white-space: nowrap; animation: run var(--t, 70s) linear infinite; }
+.ticker:hover .run { animation-play-state: paused; }
+.ticker .run button { border: 0; background: none; padding: 0; color: var(--muted); font-size: 12px; transition: color .2s; }
+.ticker .run button:hover { color: var(--ink); }
+.ticker .run button b { color: var(--ink-2); font-weight: 500; }
+.ticker .run button::before { content: "·"; margin-right: 30px; color: var(--accent); }
+@keyframes run { to { transform: translateX(-50%); } }
+
+/* abertura: o dia e o radar */
+.hero { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 28px; align-items: stretch; padding: 22px 0 8px; }
+.lead { display: flex; flex-direction: column; justify-content: center; }
+.lead h1 { margin: 16px 0 0; font-size: clamp(38px, 5.2vw, 68px); font-weight: 300; letter-spacing: -.055em; line-height: .98; }
+.lead h1 .num { color: var(--accent-2); font-weight: 400; font-variant-numeric: tabular-nums; }
+.lead p { margin: 16px 0 0; max-width: 470px; color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+.lead p b { color: var(--ink); font-weight: 500; }
+.kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 26px; border-top: 1px solid var(--line); }
+.kpi { padding: 14px 14px 0 0; }
+.kpi + .kpi { padding-left: 14px; border-left: 1px solid var(--line); }
+.kpi small { display: block; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.kpi b { display: block; margin-top: 6px; font-size: 24px; font-weight: 300; letter-spacing: -.04em; line-height: 1.05; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kpi span { display: block; margin-top: 5px; color: var(--ink-2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.panel { position: relative; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.radar-card { display: grid; grid-template-columns: minmax(0, 1fr) 176px; gap: 6px 14px; padding: 18px 18px 14px; }
+.radar-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.radar-head h2 { margin: 0 auto 0 0; font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.radar-head h2 small { display: block; color: var(--muted); font-size: 11.5px; font-weight: 400; }
+.radar { width: 100%; height: auto; overflow: visible; }
+.radar .ring { fill: none; stroke: var(--line); stroke-width: 1; }
+.radar .spoke { stroke: var(--line); stroke-width: 1; }
+.radar .all { fill: color-mix(in oklab, var(--ink) 6%, transparent); stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
+.radar .now { fill: color-mix(in oklab, var(--accent) 22%, transparent); stroke: var(--accent); stroke-width: 1.6; stroke-linejoin: round; }
+.radar .dot { fill: var(--accent); stroke: var(--bg); stroke-width: 2; }
+.radar .ax { fill: var(--muted); font-size: 11.5px; font-family: var(--font); cursor: pointer; transition: fill .2s; }
+.radar .ax:hover, .radar .ax.on { fill: var(--ink); }
+.radar .ax tspan.v { fill: var(--accent-2); font-weight: 600; }
+.shares { display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.share { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; width: 100%; padding: 6px 8px; border: 0; border-radius: 10px; background: none; text-align: left; transition: background .2s; }
+.share:hover, .share.on { background: var(--surface-2); }
+.share span { font-size: 12px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.share b { font-size: 11.5px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.share i { grid-column: 1 / -1; height: 2px; border-radius: 2px; background: var(--faint); overflow: hidden; }
+.share i::after { content: ""; display: block; height: 100%; width: var(--w); background: var(--c, var(--accent)); transform-origin: left; animation: fill 1s var(--ease) both; animation-delay: calc(var(--k) * 50ms + 200ms); }
+@keyframes fill { from { transform: scaleX(0); } }
+.legend2 { grid-column: 1 / -1; display: flex; gap: 16px; color: var(--muted); font-size: 11px; }
+.legend2 span { display: inline-flex; align-items: center; gap: 7px; }
+.legend2 i { width: 16px; height: 0; border-top: 1.6px solid var(--accent); }
+.legend2 i.d { border-top: 1px dashed var(--muted); }
+
+/* destaques */
+.sec-h { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin: 38px 0 12px; }
+.sec-h h2 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.sec-h p { margin: 0; color: var(--muted); font-size: 12px; }
+.spot { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.card { --mx: 50%; --my: 50%; position: relative; overflow: hidden; height: 210px; padding: 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--solid); color: #fff; text-align: left; isolation: isolate; transition: transform .6s var(--ease), border-color .3s, box-shadow .6s var(--ease); }
+.card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transform: scale(1.02); transition: transform 1.4s var(--ease), filter .6s; filter: saturate(.92); }
+.card::after { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(260px circle at var(--mx) var(--my), rgba(255,255,255,.14), transparent 60%), linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.84)); transition: opacity .3s; }
+.card:hover { transform: translateY(-3px); border-color: var(--line-2); box-shadow: 0 22px 44px rgba(0,0,0,.32); }
+.card:hover img { transform: scale(1.08); filter: saturate(1.05); }
+.card .in { position: absolute; left: 14px; right: 14px; bottom: 12px; }
+.card small { display: block; font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+.card strong { display: block; margin-top: 5px; font-size: 14.5px; font-weight: 500; letter-spacing: -.01em; line-height: 1.25; text-wrap: balance; }
+.card .ixr { position: absolute; top: 10px; right: 10px; }
+.card.mono { color: var(--ink); background: linear-gradient(160deg, var(--surface-2), var(--solid)); }
+.card.mono::after { background: radial-gradient(260px circle at var(--mx) var(--my), var(--glow), transparent 60%); }
+.card.mono small { color: var(--muted); }
+
+/* filtros */
+.bar { position: sticky; top: 56px; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 38px; padding: 7px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in oklab, var(--bg) 80%, transparent); backdrop-filter: blur(16px) saturate(1.1); -webkit-backdrop-filter: blur(16px) saturate(1.1); }
+.pick { height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--ink-2); font-size: 12.5px; transition: border-color .2s; }
+.pick:hover { border-color: var(--line-2); }
 .pick.on { border-color: var(--accent); color: var(--ink); }
-.chips { display: flex; gap: 6px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.bar .sp { flex: 1; }
+.count { padding: 0 10px; color: var(--muted); font-size: 12px; }
+.count b { color: var(--ink); font-weight: 500; }
+.chips { display: flex; gap: 6px; margin: 12px 0 0; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
 .chips::-webkit-scrollbar { display: none; }
-.chip { flex: none; height: 32px; padding: 0 13px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font-size: 13px; }
+.chip { flex: none; display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font-size: 12px; transition: all .25s var(--ease); }
+.chip i { width: 6px; height: 6px; border-radius: 50%; background: var(--c, var(--muted)); }
+.chip:hover { color: var(--ink); border-color: var(--line-2); }
 .chip.on { border-color: var(--line-2); background: var(--surface-2); color: var(--ink); }
 
-/* faixa de pressão: próximos 60 dias */
-.strip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(8px, 1fr); align-items: end; gap: 3px; height: 54px; margin: 22px 0 6px; }
-.strip button { position: relative; height: calc(8px + var(--h) * 46px); padding: 0; border: 0; border-radius: 999px; background: color-mix(in oklab, var(--c) 78%, transparent); opacity: .85; transition: opacity .15s, transform .15s; }
-.strip button:hover { opacity: 1; transform: scaleY(1.04); }
-.strip button.sel { outline: 2px solid var(--ink); outline-offset: 2px; opacity: 1; }
-.strip button.wk::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 3px; height: 3px; margin-left: -1.5px; border-radius: 50%; background: var(--muted); }
-.strip-legend { display: flex; justify-content: space-between; color: var(--muted); font-size: 11.5px; margin-bottom: 18px; }
+/* faixa de 60 dias */
+.strip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(5px, 1fr); align-items: end; gap: 3px; height: 46px; margin-top: 22px; }
+.strip button { position: relative; height: calc(4px + var(--h) * 42px); padding: 0; border: 0; border-radius: 3px; background: color-mix(in oklab, var(--c) 75%, transparent); transform-origin: bottom; animation: grow 1s var(--ease) both; animation-delay: calc(var(--k) * 12ms); transition: opacity .25s, filter .25s; }
+@keyframes grow { from { transform: scaleY(0); opacity: 0; } }
+.strip:hover button { opacity: .45; }
+.strip button:hover { opacity: 1; filter: brightness(1.2); }
+.strip button.sel { opacity: 1; box-shadow: 0 0 0 1.5px var(--ink); }
+.strip button.today::before { content: ""; position: absolute; left: 50%; top: -8px; width: 3px; height: 3px; margin-left: -1.5px; border-radius: 50%; background: var(--accent); }
+.legend { display: flex; justify-content: space-between; margin-top: 7px; color: var(--muted); font-size: 11px; }
 
-/* lista */
-.summary { margin: 4px 0 14px; color: var(--muted); font-size: 13px; }
-.summary b { color: var(--ink); font-weight: 600; }
+/* janelas de pico */
+.windows { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.win { padding: 13px 15px; border: 1px solid var(--line); border-radius: var(--r); background: none; text-align: left; transition: border-color .3s, background .3s, transform .5s var(--ease); }
+.win:hover { border-color: var(--line-2); background: var(--surface); transform: translateY(-2px); }
+.win small { display: block; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+.win strong { display: block; margin-top: 5px; font-size: 13px; font-weight: 500; line-height: 1.35; }
+.win .lv { height: 2px; margin-top: 11px; border-radius: 2px; background: var(--faint); overflow: hidden; }
+.win .lv i { display: block; height: 100%; width: var(--w); background: var(--c); transform-origin: left; animation: fill 1.2s var(--ease) both .3s; }
+
+/* agenda */
 .day { margin-top: 18px; }
-.day h2 { position: sticky; top: 0; z-index: 2; margin: 0 0 8px; padding: 8px 0; background: linear-gradient(var(--bg) 70%, transparent); color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
-.day h2 em { font-style: normal; color: var(--accent); }
-.ev { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 14px; width: 100%; padding: 10px 14px 10px 10px; margin-bottom: 6px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); text-align: left; transition: border-color .15s, background .15s; }
-.ev:hover { border-color: var(--line-2); background: var(--surface-2); }
-.av { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--surface-2); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ring, var(--line-2)); }
-.av.mono { display: grid; place-items: center; color: var(--ink); font-weight: 650; font-size: 15px; background: color-mix(in oklab, var(--ring) 30%, var(--solid)); }
-.ev strong { display: block; font-size: 15px; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
-.ev small { display: block; margin-top: 2px; color: var(--muted); font-size: 12.5px; }
-.ix { min-width: 44px; height: 28px; padding: 0 10px; display: grid; place-items: center; border-radius: 999px; font-size: 12.5px; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--ink); background: color-mix(in oklab, var(--c) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c) 45%, transparent); }
-.more { grid-column: 2 / -1; display: none; margin-top: 6px; color: var(--ink-2); font-size: 13.5px; }
-.ev.open .more { display: block; }
-.more a { color: var(--accent); text-decoration: none; }
-.empty { padding: 36px 0; text-align: center; color: var(--muted); }
-.past { display: block; margin: 22px auto 0; height: 36px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); }
-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-footer img { height: 18px; opacity: .8; }
-@media (max-width: 560px) { .top h1 { font-size: 19px; } .ev { grid-template-columns: 42px 1fr auto; } .av { width: 42px; height: 42px; } .strip { grid-auto-columns: minmax(4px, 1fr); gap: 2px; } }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.day h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.day h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.day h3 em { font-style: normal; color: var(--accent-2); }
+.ev { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto auto 16px; align-items: center; gap: 14px; width: 100%; padding: 8px 12px 8px 8px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: none; text-align: left; transition: background .3s var(--ease); }
+.ev::before { content: ""; position: absolute; left: 0; top: 50%; width: 2px; height: 0; border-radius: 2px; background: var(--ring, var(--accent)); transform: translateY(-50%); transition: height .35s var(--ease); }
+.ev:hover { background: linear-gradient(90deg, var(--surface-2), transparent 80%); }
+.ev:hover::before { height: 60%; }
+.ev:hover .av { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ring, var(--accent)), 0 0 18px color-mix(in oklab, var(--ring, var(--accent)) 40%, transparent); transform: scale(1.05); }
+.ev:hover .go { opacity: 1; transform: none; }
+.av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--surface-2); box-shadow: 0 0 0 2px var(--bg), 0 0 0 2.6px color-mix(in oklab, var(--ring, var(--line-2)) 70%, transparent); transition: transform .5s var(--ease), box-shadow .35s; }
+.av.mono { display: grid; place-items: center; color: var(--ink-2); font-weight: 600; font-size: 12.5px; background: color-mix(in oklab, var(--ring) 22%, var(--solid)); }
+.ev strong { display: block; font-size: 14px; font-weight: 500; letter-spacing: -.01em; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev small { display: block; margin-top: 1px; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.when { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.go { color: var(--muted); opacity: 0; transform: translateX(-4px); transition: opacity .3s, transform .4s var(--ease); }
+.ix { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px 0 7px; border-radius: 999px; font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink-2); background: color-mix(in oklab, var(--c) 12%, transparent); }
+.ix::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.card .ix { color: #fff; background: rgba(0,0,0,.42); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.empty { padding: 44px 0; text-align: center; color: var(--muted); }
+.past { display: flex; margin: 22px auto 0; }
+
+/* calendário */
+.cal-h { display: flex; align-items: center; gap: 8px; margin: 38px 0 12px; }
+.cal-h h2 { margin: 0 auto 0 0; font-size: 18px; font-weight: 400; letter-spacing: -.02em; }
+.cal-nav { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: none; color: var(--ink-2); transition: border-color .2s, transform .3s var(--ease); }
+.cal-nav:hover { border-color: var(--line-2); transform: scale(1.06); }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.cal .wd { padding: 0 6px 4px; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.cell { position: relative; min-height: 96px; padding: 9px; border: 1px solid var(--line); border-radius: var(--r); background: none; text-align: left; overflow: hidden; transition: border-color .25s, background .25s, transform .45s var(--ease); }
+.cell:hover { border-color: var(--line-2); background: var(--surface); transform: translateY(-2px); }
+.cell.out { opacity: .32; }
+.cell.today { border-color: color-mix(in oklab, var(--accent) 60%, transparent); }
+.cell.today b { color: var(--accent-2); }
+.cell.sel { border-color: var(--ink); background: var(--surface); }
+.cell b { font-size: 13px; font-weight: 500; }
+.cell .faces { display: flex; margin-top: 9px; }
+.cell .faces img, .cell .faces span { width: 24px; height: 24px; margin-right: -7px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1.5px var(--bg); background: var(--surface-2); display: grid; place-items: center; font-size: 9px; font-weight: 600; color: var(--ink-2); }
+.cell .nm { margin-top: 7px; color: var(--ink-2); font-size: 11px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cell .lv { position: absolute; left: 9px; right: 9px; bottom: 6px; height: 2px; border-radius: 2px; background: var(--c); }
+
+/* detalhes */
+.scrim { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.42); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); opacity: 0; pointer-events: none; transition: opacity .4s var(--ease); }
+.scrim.on { opacity: 1; pointer-events: auto; }
+.det { position: fixed; z-index: 61; top: 10px; right: 10px; bottom: 10px; width: min(500px, calc(100vw - 20px)); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line-2); border-radius: var(--r-lg); background: var(--solid); box-shadow: 0 40px 90px rgba(0,0,0,.45); transform: translateX(calc(100% + 24px)); transition: transform .65s var(--ease); }
+.det.on { transform: none; }
+.det .media { position: relative; flex: none; aspect-ratio: 16 / 9; background: var(--bg-2); overflow: hidden; }
+.det .media img { width: 100%; height: 100%; object-fit: cover; animation: zoomin 1.6s var(--ease) both; }
+@keyframes zoomin { from { transform: scale(1.1); opacity: 0; } }
+.det .media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, var(--solid)); }
+.det .media .credit { position: absolute; left: 14px; top: 12px; z-index: 1; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.45); color: rgba(255,255,255,.85); font-size: 10px; text-decoration: none; backdrop-filter: blur(6px); }
+.det .x { position: absolute; top: 10px; right: 10px; z-index: 2; width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; backdrop-filter: blur(8px); transition: transform .35s var(--ease); }
+.det .x:hover { transform: rotate(90deg); }
+.det .body { flex: 1; overflow: auto; padding: 2px 24px 22px; }
+.det .body > * { animation: up .7s var(--ease) both; }
+.det .body > *:nth-child(2) { animation-delay: .06s; } .det .body > *:nth-child(3) { animation-delay: .12s; } .det .body > *:nth-child(4) { animation-delay: .18s; } .det .body > *:nth-child(5) { animation-delay: .24s; } .det .body > *:nth-child(6) { animation-delay: .3s; }
+@keyframes up { from { opacity: 0; transform: translateY(10px); } }
+.det h2 { margin: 10px 0 0; font-size: 23px; font-weight: 500; letter-spacing: -.03em; line-height: 1.15; text-wrap: balance; }
+.det .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); font-size: 11.5px; }
+.tag.gold { border-color: transparent; background: var(--accent-soft); color: var(--accent-2); }
+.gauge { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; margin-top: 18px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r); }
+.gauge svg { width: 96px; height: 56px; overflow: visible; }
+.gauge .trk { fill: none; stroke: var(--faint); stroke-width: 7; stroke-linecap: round; }
+.gauge .val { fill: none; stroke: var(--c); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1.4s var(--ease) .2s; }
+.gauge text { fill: var(--ink); font-size: 22px; font-weight: 300; text-anchor: middle; font-family: var(--font); }
+.gauge p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.gauge p b { display: block; color: var(--ink); font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.tabs { display: flex; gap: 2px; margin-top: 18px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+.tabs button { flex: 1; height: 28px; border: 0; border-radius: 999px; background: none; color: var(--muted); font-size: 12px; font-weight: 500; transition: background .3s var(--ease), color .2s; }
+.tabs button.on { background: var(--surface-2); color: var(--ink); }
+.pane { margin-top: 14px; color: var(--ink-2); font-size: 13.5px; line-height: 1.7; animation: up .45s var(--ease) both; }
+.kv { display: grid; grid-template-columns: 120px 1fr; gap: 9px 14px; margin: 0; font-size: 13px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; color: var(--ink); }
+.pane a { color: var(--accent-2); text-decoration: none; }
+.pane a:hover { text-decoration: underline; }
+.same { display: grid; }
+.same button { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; align-items: center; padding: 7px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; text-align: left; transition: background .2s; }
+.same button:hover { background: var(--surface); }
+.same img, .same span.mono { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: grid; place-items: center; background: var(--surface-2); font-size: 10px; font-weight: 600; }
+.same strong { font-size: 12.5px; font-weight: 500; display: block; line-height: 1.3; }
+.same small { color: var(--muted); font-size: 11px; }
+.det .foot { display: flex; gap: 8px; padding: 12px 24px 16px; border-top: 1px solid var(--line); }
+
+/* exportação (fora da tela) */
+.exp { position: fixed; left: -9999px; top: 0; width: 1080px; padding: 70px; background: #0b0b0c; color: #f2f0ea; font-family: var(--font); }
+.exp .eh { display: flex; align-items: center; gap: 16px; }
+.exp .eh img { height: 30px; }
+.exp .eh b { font-size: 15px; letter-spacing: .34em; text-transform: uppercase; font-weight: 600; }
+.exp .eh span { margin-left: auto; color: #85837d; font-size: 15px; }
+.exp h1 { margin: 44px 0 8px; font-size: 60px; font-weight: 300; letter-spacing: -.05em; line-height: 1; }
+.exp h1 b { font-weight: 400; color: #e6c07a; }
+.exp .sub { color: #85837d; font-size: 19px; }
+.exp .rows { margin-top: 34px; border-top: 1px solid rgba(242,240,234,.1); }
+.exp .row { display: grid; grid-template-columns: 60px 1fr auto auto; gap: 22px; align-items: center; padding: 14px 4px; border-bottom: 1px solid rgba(242,240,234,.1); }
+.exp .row img, .exp .row span.mono { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: grid; place-items: center; background: #1d1d20; font-weight: 600; font-size: 18px; }
+.exp .row strong { display: block; font-size: 21px; font-weight: 500; letter-spacing: -.01em; }
+.exp .row small { display: block; color: #85837d; font-size: 15px; margin-top: 2px; }
+.exp .row .d { color: #c8c5bd; font-size: 16px; }
+.exp .row .x { min-width: 58px; height: 34px; display: grid; place-items: center; border-radius: 999px; font-weight: 600; font-size: 16px; }
+.exp .ef { display: flex; justify-content: space-between; margin-top: 40px; color: #85837d; font-size: 14px; }
+.exp.one .hero-img { width: 100%; height: 540px; object-fit: cover; border-radius: 26px; margin-top: 34px; }
+.toast { position: fixed; left: 50%; bottom: 22px; z-index: 80; transform: translate(-50%, 20px); padding: 9px 15px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--solid); color: var(--ink); font-size: 12.5px; opacity: 0; transition: opacity .3s, transform .5s var(--ease); pointer-events: none; }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 50px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11.5px; }
+footer img { height: 14px; opacity: .7; }
+
+@media (max-width: 1180px) {
+  .radar-card { grid-template-columns: 1fr; }
+  .shares { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 10px; }
+}
+@media (max-width: 980px) {
+  .hero { grid-template-columns: 1fr; }
+  .spot { grid-template-columns: repeat(4, 72%); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+  .spot .card { scroll-snap-align: start; }
+}
+@media (max-width: 620px) {
+  .radar-card { grid-template-columns: 1fr; }
+  .bar { border-radius: var(--r-lg); top: 52px; }
+  .ev { grid-template-columns: 36px minmax(0, 1fr) auto; }
+  .ev .when, .ev .go { display: none; }
+  .av { width: 36px; height: 36px; }
+  .cell { min-height: 64px; padding: 6px; } .cell .nm { display: none; } .cell .faces img, .cell .faces span { width: 18px; height: 18px; }
+  .kv { grid-template-columns: 1fr; }
+  .kpi b { font-size: 21px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .rv, .words .w { opacity: 1; filter: none; transform: none; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <img id="logo" src="marca/revenue-escuro.png" alt="Revenue">
-    <div><h1>Radar de Demanda</h1><small id="updated">Shows, festivais, feriados, provas e jogos</small></div>
+    <a class="brand" href="./" aria-label="Radar de Demanda"><img id="logo" src="marca/simbolo-escuro.png" alt=""><b>Radar de Demanda</b></a>
     <span class="sp"></span>
+    <div class="seg" id="mode" role="group" aria-label="Visualização"><button type="button" data-m="lista" class="on">Agenda</button><button type="button" data-m="cal">Calendário</button></div>
+    <button class="btn" id="exportBtn" type="button" title="Baixar uma imagem para enviar no grupo"><svg class="ico" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Exportar PNG</button>
   </header>
 
-  <div class="ask">
-    <div class="seg" id="when" role="group" aria-label="O que temos">
-      <button type="button" data-w="hoje" class="on">Hoje</button><button type="button" data-w="7">7 dias</button><button type="button" data-w="30">30 dias</button><button type="button" data-w="tudo">Tudo</button>
+  <div class="ticker rv"><em>Próximos</em><div class="lane"><div class="run" id="run"></div></div></div>
+
+  <section class="hero">
+    <div class="lead">
+      <span class="eyebrow rv" id="heroDay"></span>
+      <h1 class="words" id="heroTitle"></h1>
+      <p class="rv" id="heroText" style="--i:3"></p>
+      <div class="kpis rv" id="kpis" style="--i:4"></div>
     </div>
+    <div class="panel radar-card rv" style="--i:2">
+      <div class="radar-head">
+        <h2>Para onde olhar<small id="radarSub">Onde os eventos se concentram</small></h2>
+        <div class="seg" id="radarBy" role="group" aria-label="Agrupar por"><button type="button" data-v="tipo" class="on">Tipo</button><button type="button" data-v="praca">Praça</button></div>
+        <div class="seg" id="radarMetric" role="group" aria-label="Medida"><button type="button" data-v="n" class="on">Eventos</button><button type="button" data-v="i">Pressão</button></div>
+      </div>
+      <svg class="radar" id="radar" viewBox="0 0 340 270" role="img" aria-label="Gráfico de radar dos eventos"></svg>
+      <div class="shares" id="shares"></div>
+      <div class="legend2"><span><i></i>Próximos 90 dias</span><span><i class="d"></i>Agenda inteira</span></div>
+    </div>
+  </section>
+
+  <div class="sec-h rv"><h2>Em destaque</h2><p>Maior pressão nas próximas seis semanas</p></div>
+  <div class="spot" id="spot"></div>
+
+  <div class="bar rv">
+    <div class="seg" id="when" role="group" aria-label="Período"><button type="button" data-w="hoje" class="on">Hoje</button><button type="button" data-w="7">7 dias</button><button type="button" data-w="30">30 dias</button><button type="button" data-w="tudo">Tudo</button></div>
     <input class="pick" id="day" type="date" aria-label="Escolher um dia">
     <select class="pick" id="place" aria-label="Praça"><option value="">Todas as praças</option></select>
+    <span class="sp"></span>
+    <span class="count" id="countTag"></span>
   </div>
   <div class="chips" id="cats" role="group" aria-label="Tipo"></div>
 
   <div class="strip" id="strip" aria-label="Pressão de demanda nos próximos 60 dias"></div>
-  <div class="strip-legend"><span id="stripFrom"></span><span>altura e cor = pressão de demanda</span><span id="stripTo"></span></div>
+  <div class="legend"><span id="stripFrom"></span><span>pressão de demanda, dia a dia</span><span id="stripTo"></span></div>
 
-  <p class="summary" id="summary"></p>
-  <div id="list"></div>
-  <button class="past" id="past" type="button">Mostrar o que já passou</button>
+  <div id="viewList">
+    <div class="sec-h"><h2>Janelas de pico</h2><p>Dias seguidos com pressão alta pela frente</p></div>
+    <div class="windows" id="windows"></div>
+    <div class="sec-h"><h2 id="listTitle">Agenda</h2><p id="listSub"></p></div>
+    <div id="list"></div>
+    <button class="btn past" id="past" type="button">Mostrar o que já passou</button>
+  </div>
+  <div id="viewCal" hidden>
+    <div class="cal-h"><h2 id="calTitle"></h2><button class="cal-nav" id="calPrev" type="button" aria-label="Mês anterior"><svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button class="btn" id="calToday" type="button">Hoje</button><button class="cal-nav" id="calNext" type="button" aria-label="Próximo mês"><svg class="ico" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+    <div class="cal" id="cal"></div>
+    <div id="calDay"></div>
+  </div>
 
-  <footer><span>Fontes públicas: organizadores, bilheterias, prefeituras e federações. Datas podem mudar.</span><img id="logoFoot" src="marca/revenue-escuro.png" alt="Revenue"></footer>
+  <footer><span>Fontes públicas: organizadores, bilheterias, prefeituras, federações e imprensa. Datas podem mudar; confira a fonte.</span><img id="logoFoot" src="marca/simbolo-escuro.png" alt="Revenue"></footer>
 </div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="det" id="det" aria-label="Detalhes do evento" aria-hidden="true"></aside>
+<div class="exp" id="exp" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <script>
 'use strict';
 const $ = (id) => document.getElementById(id);
@@ -121,99 +380,353 @@ const q = new URLSearchParams(location.search);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const store = { get(k) { try { return localStorage.getItem('radar.' + k); } catch { return null; } }, set(k, v) { try { localStorage.setItem('radar.' + k, v); } catch {} } };
 if (q.get('embed')) document.body.classList.add('embed');
-const theme = q.get('tema') === 'claro' ? 'light' : q.get('tema') === 'escuro' ? 'dark' : null;
-if (theme) document.documentElement.dataset.theme = theme;
+if (q.get('tema') === 'claro') document.documentElement.dataset.theme = 'light';
+if (q.get('tema') === 'escuro') document.documentElement.dataset.theme = 'dark';
 const light = () => document.documentElement.dataset.theme === 'light' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: light)').matches);
-const setLogo = () => { const f = light() ? 'marca/revenue-claro.png' : 'marca/revenue-escuro.png'; $('logo').src = f; $('logoFoot').src = f; };
-setLogo();
+$('logo').src = $('logoFoot').src = light() ? 'marca/simbolo-claro.png' : 'marca/simbolo-escuro.png';
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const WEEK = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+const WEEKL = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
 const MON = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+const MONL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const asDate = (s) => new Date(`${s}T12:00:00`);
 const addDays = (s, n) => iso(new Date(asDate(s).getTime() + n * 864e5));
+const diffDays = (a, b) => Math.round((asDate(b) - asDate(a)) / 864e5);
 const TODAY = iso(new Date());
 const label = (s) => { const d = asDate(s); return `${WEEK[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`; };
-const range = (e) => (e.d2 && e.d2 !== e.d ? `${label(e.d)} a ${label(e.d2)}` : label(e.d));
-const color = (i) => (i >= 70 ? 'var(--hi)' : i >= 45 ? 'var(--mid)' : 'var(--lo)');
+const range = (e) => (e.d2 && e.d2 !== e.d ? `${asDate(e.d).getDate()} ${MON[asDate(e.d).getMonth()]} a ${label(e.d2)}` : label(e.d));
+const color = (i) => (i >= 75 ? 'var(--hi)' : i >= 45 ? 'var(--mid)' : 'var(--lo)');
+const hex = (i) => (i >= 75 ? '#c47a6c' : i >= 45 ? '#c9a05a' : '#6f9e91');
+const level = (i) => (i >= 85 ? 'Muito alta' : i >= 70 ? 'Alta' : i >= 45 ? 'Média' : 'Baixa');
 const CATC = { feriado: '#c47a6c', show: '#9a82d6', festival: '#d9a94e', futebol: '#55ab93', prova: '#6a8fd6', feira: '#62a6d0', sazonal: '#c99a5a', corporativo: '#8e8c86', eleicao: '#74ad78' };
 const initials = (n) => n.replace(/[^A-Za-zÀ-ÿ0-9 ]/g, ' ').split(/\s+/).filter((w) => w.length > 2 || /^[A-Z0-9]+$/.test(w)).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || '•';
+const place = (e) => (e.p === 'Multi' ? 'Várias praças' : e.p);
+const face = (e) => (e.img ? `<img class="av" src="${esc(e.img.t)}" alt="" loading="lazy" style="--ring:${CATC[e.c] || 'var(--accent)'}">` : `<span class="av mono" style="--ring:${CATC[e.c] || 'var(--accent)'}">${esc(initials(e.n))}</span>`);
+const words = (html) => { let i = 0; return html.split(/(<[^>]+>[^<]*<\/[^>]+>|\s+)/).filter(Boolean).map((t) => (/^\s+$/.test(t) ? ' ' : `<span class="w" style="--i:${i++}">${t}</span>`)).join(''); };
 
-const st = { w: q.get('dia') ? 'dia' : (store.get('w') || 'hoje'), day: q.get('dia') || '', place: q.get('praca') || store.get('place') || '', cat: '', past: false };
+const st = { w: q.get('dia') ? 'dia' : (store.get('w') || 'hoje'), day: q.get('dia') || '', place: q.get('praca') || store.get('place') || '', cat: '', past: false, mode: store.get('mode') === 'cal' ? 'cal' : 'lista', month: (q.get('dia') || TODAY).slice(0, 7), calDay: q.get('dia') || '', rBy: store.get('rby') === 'praca' ? 'praca' : 'tipo', rMetric: store.get('rmetric') === 'i' ? 'i' : 'n' };
 let DATA = { eventos: [], categorias: {} };
-
-function inWindow(e) {
-  const end = e.d2 || e.d;
-  if (st.w === 'dia') return e.d <= st.day && end >= st.day;
-  if (!st.past && end < TODAY) return false;
-  if (st.w === 'hoje') return e.d <= TODAY && end >= TODAY;
-  if (st.w === 'tudo') return true;
-  const last = addDays(TODAY, Number(st.w) - 1);
-  return e.d <= last && end >= (st.past ? '0000' : TODAY);
-}
+const EV = () => DATA.eventos;
+const end = (e) => e.d2 || e.d;
+const onDay = (e, d) => e.d <= d && end(e) >= d;
 const placeOk = (e) => !st.place || e.p === st.place || e.p === 'Nacional' || e.p === 'Multi';
 const catOk = (e) => !st.cat || e.c === st.cat;
+const ok = (e) => placeOk(e) && catOk(e);
+const ids = new Map();
+const idOf = (e) => { if (!ids.has(e)) ids.set(e, String(ids.size)); return ids.get(e); };
+const byId = (id) => { for (const [e, v] of ids) if (v === id) return e; return null; };
 
-function render() {
+function inWindow(e) {
+  if (st.w === 'dia') return onDay(e, st.day);
+  if (!st.past && end(e) < TODAY) return false;
+  if (st.w === 'hoje') return onDay(e, TODAY);
+  if (st.w === 'tudo') return true;
+  return e.d <= addDays(TODAY, Number(st.w) - 1);
+}
+const whenText = () => (st.w === 'dia' ? label(st.day) : st.w === 'hoje' ? 'hoje' : st.w === 'tudo' ? 'na agenda' : `nos próximos ${st.w} dias`);
+function countUp(el, to, fmt = (v) => v) {
+  if (reduced) { el.textContent = fmt(to); return; }
+  const from = Number(el.dataset.v || 0); el.dataset.v = to;
+  const t0 = performance.now(), dur = 1100;
+  const step = (t) => { const p = Math.min(1, (t - t0) / dur); el.textContent = fmt(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+
+/* --- abertura --- */
+function renderHero() {
+  const d = asDate(TODAY);
+  $('heroDay').textContent = `${WEEKL[d.getDay()]} · ${d.getDate()} de ${MONL[d.getMonth()]}`;
+  const today = EV().filter((e) => onDay(e, TODAY) && ok(e)).sort((a, b) => b.i - a.i);
+  const t = $('heroTitle');
+  t.classList.remove('in');
+  t.innerHTML = words(`<span class="num" id="heroNum">0</span> ${today.length === 1 ? 'evento' : 'eventos'} hoje`);
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('in')));
+  setTimeout(() => countUp($('heroNum'), today.length), 200);
+  const next = EV().filter((e) => e.d > TODAY && ok(e)).sort((a, b) => a.d.localeCompare(b.d) || b.i - a.i)[0];
+  $('heroText').innerHTML = today.length ? `Maior pressão hoje: <b>${esc(today[0].n)}</b>${today[0].p !== 'Nacional' ? `, ${esc(place(today[0]))}` : ''}.${next ? ` Em seguida, <b>${esc(next.n)}</b> (${label(next.d)}).` : ''}` : next ? `Nada marcado para hoje. Em seguida, <b>${esc(next.n)}</b> (${label(next.d)}).` : '';
+  const week = EV().filter((e) => end(e) >= TODAY && e.d <= addDays(TODAY, 6) && ok(e));
+  const peakWin = windows()[0];
+  const byPlace = {};
+  EV().filter((e) => end(e) >= TODAY && e.d <= addDays(TODAY, 89) && e.p !== 'Nacional' && e.p !== 'Multi' && catOk(e)).forEach((e) => { byPlace[e.p] = (byPlace[e.p] || 0) + e.i; });
+  const topPlace = Object.entries(byPlace).sort((a, b) => b[1] - a[1])[0];
+  $('kpis').innerHTML = `<div class="kpi"><small>Próximos 7 dias</small><b id="k1">0</b><span>${week.length === 1 ? 'evento' : 'eventos'}</span></div>
+    <div class="kpi"><small>Próximo pico</small><b>${peakWin ? `${asDate(peakWin.from).getDate()} ${MON[asDate(peakWin.from).getMonth()]}` : '—'}</b><span>${peakWin ? esc([...peakWin.names][0] || '') : 'sem pico à vista'}</span></div>
+    <div class="kpi"><small>Praça em alta</small><b title="${topPlace ? esc(topPlace[0]) : ''}">${topPlace ? esc(topPlace[0]) : '—'}</b><span>próximos 90 dias</span></div>`;
+  setTimeout(() => countUp($('k1'), week.length), 300);
+}
+
+/* --- fita --- */
+function renderTicker() {
+  const up = EV().filter((e) => e.d >= TODAY && ok(e)).sort((a, b) => a.d.localeCompare(b.d)).slice(0, 18);
+  const items = up.map((e) => `<button type="button" data-id="${idOf(e)}"><b>${esc(e.n.split(' (')[0])}</b> · ${esc(label(e.d))}</button>`).join('');
+  $('run').innerHTML = items + items;
+  $('run').style.setProperty('--t', `${Math.max(40, up.length * 5)}s`);
+}
+
+/* --- radar: onde os eventos se concentram --- */
+let radarAnim = 0, radarPrev = null;
+function radarSeries() {
+  const by = st.rBy, metric = st.rMetric;
+  const base = EV().filter((e) => (by === 'tipo' ? placeOk(e) : catOk(e)));
+  const keyOf = (e) => (by === 'tipo' ? e.c : e.p);
+  const val = (e) => (metric === 'n' ? 1 : e.i);
+  let axes;
+  if (by === 'tipo') axes = Object.keys(DATA.categorias).filter((k) => base.some((e) => e.c === k));
+  else {
+    const tot = {}; base.filter((e) => e.p !== 'Nacional' && e.p !== 'Multi').forEach((e) => { tot[e.p] = (tot[e.p] || 0) + val(e); });
+    axes = Object.entries(tot).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k]) => k);
+  }
+  const sum = (list) => { const m = Object.fromEntries(axes.map((a) => [a, 0])); list.forEach((e) => { const k = keyOf(e); if (k in m) m[k] += val(e); }); return m; };
+  const now = sum(base.filter((e) => end(e) >= TODAY && e.d <= addDays(TODAY, 89)));
+  const all = sum(base);
+  const share = (m) => { const t = Object.values(m).reduce((a, b) => a + b, 0) || 1; return Object.fromEntries(axes.map((a) => [a, m[a] / t])); };
+  return { axes, now, all, sNow: share(now), sAll: share(all) };
+}
+function renderRadar() {
+  const R = radarSeries();
+  document.querySelectorAll('#radarBy button').forEach((b) => b.classList.toggle('on', b.dataset.v === st.rBy));
+  document.querySelectorAll('#radarMetric button').forEach((b) => b.classList.toggle('on', b.dataset.v === st.rMetric));
+  $('radarSub').textContent = `${st.rBy === 'tipo' ? 'Por tipo' : 'Por praça'} · ${st.rMetric === 'n' ? 'quantidade de eventos' : 'pressão somada'}${st.rBy === 'tipo' && st.place ? ` · ${st.place}` : ''}${st.rBy === 'praca' && st.cat ? ` · ${DATA.categorias[st.cat]}` : ''}`;
+  const n = R.axes.length, cx = 170, cy = 136, rad = 96;
+  const max = Math.max(0.0001, ...R.axes.map((a) => Math.max(R.sNow[a], R.sAll[a])));
+  const ang = (k) => -Math.PI / 2 + (k / n) * Math.PI * 2;
+  const pt = (k, v) => [cx + Math.cos(ang(k)) * rad * v, cy + Math.sin(ang(k)) * rad * v];
+  const label = (a) => (st.rBy === 'tipo' ? DATA.categorias[a] || a : a);
+  const selKey = st.rBy === 'tipo' ? st.cat : st.place;
+  let svg = [0.25, 0.5, 0.75, 1].map((f) => `<polygon class="ring" points="${R.axes.map((_, k) => pt(k, f).join(',')).join(' ')}"/>`).join('');
+  svg += R.axes.map((_, k) => `<line class="spoke" x1="${cx}" y1="${cy}" x2="${pt(k, 1)[0]}" y2="${pt(k, 1)[1]}"/>`).join('');
+  svg += `<polygon class="all" id="rAll"/><polygon class="now" id="rNow"/>${R.axes.map((_, k) => `<circle class="dot" id="rDot${k}" r="3"/>`).join('')}`;
+  svg += R.axes.map((a, k) => {
+    const [x, y] = pt(k, 1.2), c = Math.cos(ang(k));
+    const anchor = Math.abs(c) < 0.2 ? 'middle' : c > 0 ? 'start' : 'end';
+    return `<text class="ax${a === selKey ? ' on' : ''}" data-k="${esc(a)}" x="${x.toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="${anchor}">${esc(label(a))} <tspan class="v">${Math.round(R.sNow[a] * 100)}%</tspan></text>`;
+  }).join('');
+  $('radar').innerHTML = svg;
+  const scale = (v) => Math.sqrt(v / max);
+  const target = R.axes.map((a) => scale(R.sNow[a])), targetAll = R.axes.map((a) => scale(R.sAll[a]));
+  const from = radarPrev && radarPrev.length === n ? radarPrev : target.map(() => 0);
+  const draw = (p) => {
+    const cur = target.map((v, k) => from[k] + (v - from[k]) * p);
+    $('rNow').setAttribute('points', cur.map((v, k) => pt(k, v).join(',')).join(' '));
+    $('rAll').setAttribute('points', targetAll.map((v, k) => pt(k, v * Math.min(1, p * 1.4)).join(',')).join(' '));
+    cur.forEach((v, k) => { const [x, y] = pt(k, v); const d = $(`rDot${k}`); d.setAttribute('cx', x); d.setAttribute('cy', y); });
+  };
+  cancelAnimationFrame(radarAnim);
+  if (reduced) draw(1);
+  else { const t0 = performance.now(); const step = (t) => { const p = Math.min(1, (t - t0) / 1100); draw(1 - Math.pow(1 - p, 3)); if (p < 1) radarAnim = requestAnimationFrame(step); }; radarAnim = requestAnimationFrame(step); }
+  radarPrev = target;
+  const order = R.axes.slice().sort((a, b) => R.sNow[b] - R.sNow[a]);
+  const mx = Math.max(0.0001, ...order.map((a) => R.sNow[a]));
+  $('shares').innerHTML = order.map((a, k) => `<button type="button" class="share${a === selKey ? ' on' : ''}" data-k="${esc(a)}" style="--k:${k}"><span>${esc(label(a))}</span><b>${Math.round(R.sNow[a] * 100)}%</b><i style="--w:${(R.sNow[a] / mx * 100).toFixed(0)}%;--c:${st.rBy === 'tipo' ? CATC[a] || 'var(--accent)' : 'var(--accent)'}"></i></button>`).join('');
+}
+function pickAxis(k) {
+  if (st.rBy === 'tipo') { st.cat = st.cat === k ? '' : k; document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c.dataset.c === st.cat)); }
+  else { st.place = st.place === k ? '' : k; $('place').value = st.place; store.set('place', st.place); }
+  if (st.w === 'hoje') st.w = '30';
+  renderAll(true);
+  document.querySelector('.bar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* --- destaques --- */
+function renderSpot() {
+  const spot = EV().filter((e) => end(e) >= TODAY && e.d <= addDays(TODAY, 45) && ok(e)).sort((a, b) => b.i - a.i).slice(0, 4);
+  $('spot').innerHTML = spot.map((e, k) => `<button type="button" class="card rv${e.img ? '' : ' mono'}" style="--i:${k}" data-id="${idOf(e)}">${e.img ? `<img src="${esc(e.img.f)}" alt="" loading="lazy">` : ''}<span class="ixr"><span class="ix" style="--c:${color(e.i)}">${e.i}</span></span><span class="in"><small>${esc(onDay(e, TODAY) ? 'acontecendo agora' : range(e))} · ${esc(place(e))}</small><strong>${esc(e.n)}</strong></span></button>`).join('')
+    || '<p class="empty" style="grid-column:1/-1">Nada em destaque com estes filtros.</p>';
+}
+
+/* --- faixa de 60 dias --- */
+function drawStrip() {
+  const days = Array.from({ length: 60 }, (_, i) => addDays(TODAY, i));
+  $('strip').innerHTML = days.map((d, k) => {
+    const evs = EV().filter((e) => onDay(e, d) && ok(e));
+    const peak = evs.reduce((m, e) => Math.max(m, e.i), 0);
+    return `<button type="button" data-d="${d}" class="${st.w === 'dia' && st.day === d ? 'sel' : ''}${d === TODAY ? ' today' : ''}" style="--k:${k};--h:${(peak / 100).toFixed(2)};--c:${peak ? color(peak) : 'var(--line-2)'}" title="${esc(`${label(d)} · ${evs.length ? `${evs.length} ${evs.length === 1 ? 'evento' : 'eventos'} · pressão ${peak}` : 'sem evento marcado'}`)}"></button>`;
+  }).join('');
+  $('stripFrom').textContent = label(days[0]);
+  $('stripTo').textContent = label(days[59]);
+}
+
+/* --- janelas de pico --- */
+function windows() {
+  const out = [];
+  let cur = null;
+  for (let k = 0; k < 200; k++) {
+    const d = addDays(TODAY, k);
+    const evs = EV().filter((e) => onDay(e, d) && ok(e));
+    const peak = evs.reduce((m, e) => Math.max(m, e.i), 0);
+    if (peak >= 75) { if (!cur) cur = { from: d, to: d, peak, names: new Set() }; cur.to = d; cur.peak = Math.max(cur.peak, peak); evs.filter((e) => e.i >= 60).sort((a, b) => b.i - a.i).slice(0, 3).forEach((e) => cur.names.add(e.n.split(' · ')[0].split(' (')[0])); }
+    else if (cur) { out.push(cur); cur = null; }
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+function renderWindows() {
+  const top = windows().slice(0, 8);
+  $('windows').innerHTML = top.length ? top.map((w, k) => `<button type="button" class="win rv" style="--i:${k}" data-from="${w.from}"><small>${w.from === w.to ? label(w.from) : `${asDate(w.from).getDate()} ${MON[asDate(w.from).getMonth()]} a ${label(w.to)}`}</small><strong>${esc([...w.names].slice(0, 3).join(', '))}</strong><div class="lv"><i style="--w:${w.peak}%;--c:${color(w.peak)}"></i></div></button>`).join('')
+    : '<p class="empty" style="grid-column:1/-1;padding:14px 0">Nenhuma janela de pico com estes filtros.</p>';
+}
+
+/* --- agenda --- */
+function renderList() {
   document.querySelectorAll('#when button').forEach((b) => b.classList.toggle('on', b.dataset.w === st.w));
   $('day').classList.toggle('on', st.w === 'dia');
   $('day').value = st.w === 'dia' ? st.day : '';
-  const list = DATA.eventos.filter((e) => inWindow(e) && placeOk(e) && catOk(e));
-  // agrupa pelo primeiro dia que importa (o dia escolhido, hoje ou o início)
+  const list = EV().filter((e) => inWindow(e) && ok(e));
   const key = (e) => (st.w === 'dia' ? st.day : st.w === 'hoje' ? TODAY : e.d < TODAY && !st.past ? TODAY : e.d);
   const groups = new Map();
   list.sort((a, b) => key(a).localeCompare(key(b)) || b.i - a.i).forEach((e) => { const k = key(e); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(e); });
-  const top = list.slice().sort((a, b) => b.i - a.i)[0];
-  const when = st.w === 'dia' ? label(st.day) : st.w === 'hoje' ? 'hoje' : st.w === 'tudo' ? 'no calendário' : `nos próximos ${st.w} dias`;
-  $('summary').innerHTML = list.length ? `<b>${list.length}</b> ${list.length === 1 ? 'evento' : 'eventos'} ${when}${top ? ` · maior pressão: <b>${esc(top.n)}</b>` : ''}` : '';
-  $('list').innerHTML = list.length ? [...groups].map(([k, evs]) => `<section class="day"><h2>${k === TODAY ? '<em>hoje</em> · ' : ''}${label(k)}</h2>${evs.map(row).join('')}</section>`).join('')
-    : `<p class="empty">Nada marcado ${when}${st.place ? ` em ${esc(st.place)}` : ''}.</p>`;
+  $('countTag').innerHTML = `<b>${list.length}</b> ${list.length === 1 ? 'evento' : 'eventos'} ${whenText()}`;
+  $('listTitle').textContent = st.w === 'dia' ? label(st.day) : st.w === 'hoje' ? 'Hoje' : st.w === 'tudo' ? 'Toda a agenda' : `Próximos ${st.w} dias`;
+  $('listSub').textContent = [st.place ? `${st.place} e eventos nacionais` : 'Todas as praças', st.cat ? DATA.categorias[st.cat] : ''].filter(Boolean).join(' · ');
+  let k = 0;
+  $('list').innerHTML = list.length ? [...groups].map(([g, evs]) => `<section class="day rv" style="--i:${Math.min(k, 8)}"><h3>${g === TODAY ? '<em>hoje</em>' : ''}${label(g)}</h3>${evs.map((e) => row(e, k++)).join('')}</section>`).join('')
+    : `<p class="empty">Nada marcado ${whenText()}${st.place ? ` em ${esc(st.place)}` : ''}.</p>`;
   $('past').textContent = st.past ? 'Esconder o que já passou' : 'Mostrar o que já passou';
   $('past').hidden = st.w === 'dia' || st.w === 'hoje';
-  drawStrip();
 }
-function row(e) {
-  const ring = CATC[e.c] || 'var(--line-2)';
-  const av = e.img ? `<img class="av" src="${esc(e.img)}" alt="" loading="lazy" style="--ring:${ring}">` : `<span class="av mono" style="--ring:${ring}">${esc(initials(e.n))}</span>`;
-  const cat = DATA.categorias[e.c] || e.c;
-  return `<button type="button" class="ev" aria-expanded="false">${av}<span><strong>${esc(e.n)}</strong><small>${esc(e.p === 'Multi' ? 'Várias praças' : e.p)} · ${esc(cat)}${e.d2 && e.d2 !== e.d ? ` · ${range(e)}` : ''}</small></span><span class="ix" style="--c:${color(e.i)}" title="Pressão de demanda, de 0 a 100">${e.i}</span>
-    <span class="more">${esc(e.s || '')}${e.src ? ` <a href="${esc(e.src)}" target="_blank" rel="noopener">Fonte</a>` : ''}</span></button>`;
-}
-function drawStrip() {
-  const days = Array.from({ length: 60 }, (_, i) => addDays(TODAY, i));
-  $('strip').innerHTML = days.map((d) => {
-    const evs = DATA.eventos.filter((e) => e.d <= d && (e.d2 || e.d) >= d && placeOk(e) && catOk(e));
-    const peak = evs.reduce((m, e) => Math.max(m, e.i), 0);
-    const wd = asDate(d).getDay();
-    return `<button type="button" data-d="${d}" class="${st.w === 'dia' && st.day === d ? 'sel' : ''}${wd === 0 || wd === 6 ? ' wk' : ''}" style="--h:${(peak / 100).toFixed(2)};--c:${peak ? color(peak) : 'var(--line-2)'}" title="${esc(`${label(d)} · ${evs.length ? `${evs.length} ${evs.length === 1 ? 'evento' : 'eventos'} · pressão ${peak}` : 'sem evento marcado'}`)}"></button>`;
+const row = (e) => `<button type="button" class="ev" style="--ring:${CATC[e.c] || 'var(--accent)'}" data-id="${idOf(e)}">${face(e)}<span><strong>${esc(e.n)}</strong><small>${esc(place(e))} · ${esc(DATA.categorias[e.c] || e.c)}${e.local ? ` · ${esc(e.local)}` : ''}</small></span><span class="when">${esc(range(e))}</span><span class="ix" style="--c:${color(e.i)}" title="Pressão de demanda: ${level(e.i).toLowerCase()}">${e.i}</span><svg class="ico go" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>`;
+
+/* --- calendário --- */
+function renderCal() {
+  const [y, m] = st.month.split('-').map(Number);
+  $('calTitle').textContent = `${MONL[m - 1][0].toUpperCase()}${MONL[m - 1].slice(1)} de ${y}`;
+  const first = new Date(y, m - 1, 1, 12), start = addDays(iso(first), -first.getDay());
+  const cells = Array.from({ length: 42 }, (_, k) => addDays(start, k));
+  $('cal').innerHTML = WEEK.map((w) => `<div class="wd">${w}</div>`).join('') + cells.map((d, k) => {
+    const evs = EV().filter((e) => onDay(e, d) && ok(e)).sort((a, b) => b.i - a.i);
+    const peak = evs.length ? evs[0].i : 0;
+    const faces = evs.slice(0, 4).map((e) => (e.img ? `<img src="${esc(e.img.t)}" alt="" loading="lazy">` : `<span>${esc(initials(e.n))}</span>`)).join('') + (evs.length > 4 ? `<span>+${evs.length - 4}</span>` : '');
+    return `<button type="button" class="cell rv${d.slice(0, 7) !== st.month ? ' out' : ''}${d === TODAY ? ' today' : ''}${d === st.calDay ? ' sel' : ''}" style="--i:${k % 7 + Math.floor(k / 7)}" data-d="${d}"><b>${asDate(d).getDate()}</b>${evs.length ? `<div class="faces">${faces}</div><div class="nm">${esc(evs[0].n)}</div><span class="lv" style="--c:${color(peak)}"></span>` : ''}</button>`;
   }).join('');
-  $('stripFrom').textContent = label(days[0]);
-  $('stripTo').textContent = label(days[days.length - 1]);
+  const d = st.calDay;
+  const evs = d ? EV().filter((e) => onDay(e, d) && ok(e)).sort((a, b) => b.i - a.i) : [];
+  $('calDay').innerHTML = d ? `<div class="sec-h"><h2>${label(d)}</h2><p>${evs.length ? `${evs.length} ${evs.length === 1 ? 'evento' : 'eventos'}` : 'Sem evento marcado'}</p></div><div class="day rv">${evs.map(row).join('')}</div>` : '';
+}
+
+/* --- detalhes --- */
+function openDetail(e) {
+  if (!e) return;
+  const same = EV().filter((x) => x !== e && x.d <= end(e) && end(x) >= e.d && ok(x)).sort((a, b) => b.i - a.i).slice(0, 10);
+  const until = diffDays(TODAY, e.d);
+  const status = onDay(e, TODAY) ? 'Acontecendo agora' : until > 0 ? `Em ${until} ${until === 1 ? 'dia' : 'dias'}` : 'Já passou';
+  const img = e.img;
+  $('det').innerHTML = `<div class="media">${img ? `<img src="${esc(img.f)}" alt="">${img.credito ? `<a class="credit" href="${esc(img.pagina || '#')}" target="_blank" rel="noopener">Imagem: ${esc(img.credito)}</a>` : ''}` : ''}<button class="x" type="button" data-close aria-label="Fechar"><svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+  <div class="body">
+    <span class="eyebrow">${esc(range(e))} · ${esc(place(e))}</span>
+    <h2>${esc(e.n)}</h2>
+    <div class="tags"><span class="tag gold">${esc(status)}</span><span class="tag">${esc(DATA.categorias[e.c] || e.c)}</span>${e.local ? `<span class="tag">${esc(e.local)}</span>` : ''}${e.publico ? `<span class="tag">${esc(e.publico)}</span>` : ''}</div>
+    <div class="gauge" style="--c:${color(e.i)}"><svg viewBox="0 0 96 56"><path class="trk" d="M8 50a40 40 0 0 1 80 0"/><path class="val" d="M8 50a40 40 0 0 1 80 0" pathLength="100"/><text x="48" y="48">${e.i}</text></svg><p><b>Pressão ${level(e.i).toLowerCase()}</b>De 0 a 100: público, uso de ônibus, concentração em poucos dias e soma com feriados. Indica prioridade, não previsão de vendas.</p></div>
+    <div class="tabs" role="tablist"><button type="button" class="on" data-t="resumo">Resumo</button><button type="button" data-t="publico">Público e venda</button><button type="button" data-t="dia">No mesmo período${same.length ? ` · ${same.length}` : ''}</button></div>
+    <div class="pane" id="pane"></div>
+  </div>
+  <div class="foot"><button class="btn" type="button" data-export-one><svg class="ico" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>PNG deste evento</button>${e.fonte ? `<a class="btn" href="${esc(e.fonte.url)}" target="_blank" rel="noopener">Ver a fonte</a>` : ''}</div>`;
+  const panes = {
+    resumo: `<p style="margin:0">${esc(e.s || 'Sem resumo.')}</p>`,
+    publico: `<dl class="kv"><dt>Quando</dt><dd>${esc(range(e))}${e.d2 && e.d2 !== e.d ? ` (${diffDays(e.d, e.d2) + 1} dias)` : ''}</dd><dt>Onde</dt><dd>${esc(place(e))}${e.local ? ` · ${esc(e.local)}` : ''}</dd><dt>Público</dt><dd>${esc(e.publico || 'Não divulgado')}</dd><dt>Venda</dt><dd>${esc(e.venda || 'Sem informação de venda')}</dd>${e.fonte_publico ? `<dt>Fonte do público</dt><dd><a href="${esc(e.fonte_publico.url)}" target="_blank" rel="noopener">${esc(e.fonte_publico.nome)}</a></dd>` : ''}${e.fonte ? `<dt>Fonte</dt><dd><a href="${esc(e.fonte.url)}" target="_blank" rel="noopener">${esc(e.fonte.nome)}</a></dd>` : ''}</dl>`,
+    dia: same.length ? `<div class="same">${same.map((x) => `<button type="button" data-id="${idOf(x)}">${x.img ? `<img src="${esc(x.img.t)}" alt="">` : `<span class="mono">${esc(initials(x.n))}</span>`}<span><strong>${esc(x.n)}</strong><small>${esc(range(x))} · ${esc(place(x))}</small></span><span class="ix" style="--c:${color(x.i)}">${x.i}</span></button>`).join('')}</div>` : '<p style="margin:0;color:var(--muted)">Nenhum outro evento no mesmo período com estes filtros.</p>',
+  };
+  const show = (t) => { $('pane').innerHTML = panes[t]; $('det').querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.t === t)); };
+  show('resumo');
+  $('det').querySelector('.tabs').addEventListener('click', (ev) => { const b = ev.target.closest('button[data-t]'); if (b) show(b.dataset.t); });
+  $('det').querySelector('[data-export-one]').addEventListener('click', () => exportPng([e], true));
+  $('det').classList.add('on'); $('det').setAttribute('aria-hidden', 'false'); $('scrim').classList.add('on');
+  requestAnimationFrame(() => requestAnimationFrame(() => { const v = $('det').querySelector('.val'); if (v) v.style.strokeDashoffset = 100 - e.i; }));
+}
+function closeDetail() { $('det').classList.remove('on'); $('det').setAttribute('aria-hidden', 'true'); $('scrim').classList.remove('on'); }
+
+/* --- exportar PNG para o grupo --- */
+async function exportPng(list, one) {
+  if (!window.html2canvas) { toast('Aguarde um instante e tente de novo.'); return; }
+  const evs = list || EV().filter((e) => (st.mode === 'cal' && st.calDay ? onDay(e, st.calDay) : inWindow(e)) && ok(e)).sort((a, b) => a.d.localeCompare(b.d) || b.i - a.i).slice(0, 12);
+  if (!evs.length) { toast('Nada para exportar com estes filtros.'); return; }
+  const period = one ? range(evs[0]) : st.mode === 'cal' && st.calDay ? label(st.calDay) : whenText();
+  const rows = evs.map((e) => `<div class="row">${e.img ? `<img src="${esc(e.img.t)}" alt="">` : `<span class="mono">${esc(initials(e.n))}</span>`}<div><strong>${esc(e.n)}</strong><small>${esc(place(e))} · ${esc(DATA.categorias[e.c] || e.c)}</small></div><span class="d">${esc(range(e))}</span><span class="x" style="background:${hex(e.i)}26;color:#f2f0ea">${e.i}</span></div>`).join('');
+  const e0 = evs[0];
+  const dt = asDate(TODAY);
+  $('exp').className = `exp${one ? ' one' : ''}`;
+  $('exp').innerHTML = `<div class="eh"><img src="marca/simbolo-escuro.png" alt=""><b>Radar de Demanda</b><span>${dt.getDate()} de ${MONL[dt.getMonth()]} de ${dt.getFullYear()}</span></div>
+    ${one ? `${e0.img ? `<img class="hero-img" src="${esc(e0.img.f)}" alt="">` : ''}<h1><b>${esc(e0.n)}</b></h1><div class="sub">${esc(range(e0))} · ${esc(place(e0))}${e0.local ? ` · ${esc(e0.local)}` : ''} · pressão ${e0.i} (${level(e0.i).toLowerCase()})</div><p style="font-size:20px;line-height:1.6;color:#c8c5bd;margin-top:22px">${esc(e0.s || '')}</p>`
+    : `<h1><b>${evs.length}</b> ${evs.length === 1 ? 'evento' : 'eventos'} ${esc(period)}</h1><div class="sub">${esc(st.place || 'Todas as praças')}${st.cat ? ` · ${esc(DATA.categorias[st.cat])}` : ''} · pressão de demanda de 0 a 100</div><div class="rows">${rows}</div>`}
+    <div class="ef"><span>Revenue · Grupo JCA</span><span>Fontes públicas · datas podem mudar</span></div>`;
+  toast('Gerando a imagem…');
+  await Promise.all([...$('exp').querySelectorAll('img')].map((im) => (im.complete ? Promise.resolve() : new Promise((r) => { im.onload = im.onerror = r; }))));
+  try {
+    const canvas = await html2canvas($('exp'), { backgroundColor: '#0b0b0c', scale: 2, useCORS: true, logging: false });
+    const a = document.createElement('a');
+    a.download = `radar-demanda-${(one ? e0.n : period).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-|-$/g, '')}.png`;
+    a.href = canvas.toDataURL('image/png');
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('Imagem baixada. É só mandar no grupo.');
+  } catch (err) { toast('Não consegui gerar a imagem.'); }
+}
+let toastT;
+function toast(msg) { $('toast').textContent = msg; $('toast').classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => $('toast').classList.remove('on'), 2600); }
+
+/* --- movimento: o que entra na tela aparece em sequência --- */
+const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }), { rootMargin: '0px 0px -30px 0px' }) : null;
+function reveal() {
+  document.querySelectorAll('.rv:not(.in)').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (!io || (r.top < innerHeight && r.bottom > 0)) requestAnimationFrame(() => el.classList.add('in'));
+    else io.observe(el);
+  });
+}
+// brilho que segue o mouse nos cartões
+document.addEventListener('pointermove', (e) => { const c = e.target.closest && e.target.closest('.card'); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty('--mx', `${e.clientX - r.left}px`); c.style.setProperty('--my', `${e.clientY - r.top}px`); });
+
+function renderAll(soft) {
+  const run = () => {
+    document.querySelectorAll('#mode button').forEach((b) => b.classList.toggle('on', b.dataset.m === st.mode));
+    $('viewList').hidden = st.mode !== 'lista';
+    $('viewCal').hidden = st.mode !== 'cal';
+    if (!soft) renderHero();
+    renderTicker(); renderRadar(); renderSpot(); drawStrip();
+    if (st.mode === 'lista') { renderWindows(); renderList(); } else renderCal();
+    reveal();
+  };
+  if (soft && document.startViewTransition && !reduced) document.startViewTransition(run); else run();
 }
 function fillControls() {
-  const places = [...new Set(DATA.eventos.map((e) => e.p).filter((p) => p !== 'Nacional' && p !== 'Multi'))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const places = [...new Set(EV().map((e) => e.p).filter((p) => p !== 'Nacional' && p !== 'Multi'))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
   $('place').innerHTML = '<option value="">Todas as praças</option>' + places.map((p) => `<option${p === st.place ? ' selected' : ''}>${esc(p)}</option>`).join('');
-  const used = new Set(DATA.eventos.map((e) => e.c));
-  $('cats').innerHTML = '<button type="button" class="chip on" data-c="">Tudo</button>' + Object.entries(DATA.categorias).filter(([k]) => used.has(k)).map(([k, v]) => `<button type="button" class="chip" data-c="${k}">${esc(v)}</button>`).join('');
+  const used = new Set(EV().map((e) => e.c));
+  $('cats').innerHTML = `<button type="button" class="chip${st.cat ? '' : ' on'}" data-c="">Tudo</button>` + Object.entries(DATA.categorias).filter(([k]) => used.has(k)).map(([k, v]) => `<button type="button" class="chip${st.cat === k ? ' on' : ''}" data-c="${k}" style="--c:${CATC[k] || 'var(--muted)'}"><i></i>${esc(v)}</button>`).join('');
 }
-$('when').addEventListener('click', (e) => { const b = e.target.closest('button[data-w]'); if (!b) return; st.w = b.dataset.w; store.set('w', st.w); render(); });
-$('day').addEventListener('change', (e) => { if (e.target.value) { st.w = 'dia'; st.day = e.target.value; } else { st.w = 'hoje'; } render(); });
-$('place').addEventListener('change', (e) => { st.place = e.target.value; store.set('place', st.place); render(); });
-$('cats').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; st.cat = b.dataset.c; document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c === b)); render(); });
-$('strip').addEventListener('click', (e) => { const b = e.target.closest('button[data-d]'); if (!b) return; st.w = 'dia'; st.day = b.dataset.d; render(); });
-$('list').addEventListener('click', (e) => { const ev = e.target.closest('.ev'); if (!ev || e.target.closest('a')) return; ev.classList.toggle('open'); ev.setAttribute('aria-expanded', String(ev.classList.contains('open'))); });
-$('past').addEventListener('click', () => { st.past = !st.past; render(); });
-document.addEventListener('error', (e) => { const img = e.target; if (img.classList && img.classList.contains('av')) { const s = document.createElement('span'); s.className = 'av mono'; s.style.cssText = img.style.cssText; s.textContent = '•'; img.replaceWith(s); } }, true);
+
+$('mode').addEventListener('click', (e) => { const b = e.target.closest('button[data-m]'); if (!b) return; st.mode = b.dataset.m; store.set('mode', st.mode); if (st.mode === 'cal' && !st.calDay) st.calDay = TODAY; renderAll(true); });
+$('when').addEventListener('click', (e) => { const b = e.target.closest('button[data-w]'); if (!b) return; st.w = b.dataset.w; store.set('w', st.w); st.mode = 'lista'; renderAll(true); });
+$('day').addEventListener('change', (e) => { if (e.target.value) { st.w = 'dia'; st.day = e.target.value; st.month = st.day.slice(0, 7); st.calDay = st.day; } else st.w = 'hoje'; renderAll(true); });
+$('place').addEventListener('change', (e) => { st.place = e.target.value; store.set('place', st.place); renderAll(true); });
+$('cats').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; st.cat = b.dataset.c; document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c === b)); renderAll(true); });
+$('radarBy').addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (!b) return; st.rBy = b.dataset.v; store.set('rby', st.rBy); radarPrev = null; renderRadar(); });
+$('radarMetric').addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (!b) return; st.rMetric = b.dataset.v; store.set('rmetric', st.rMetric); renderRadar(); });
+$('radar').addEventListener('click', (e) => { const t = e.target.closest('[data-k]'); if (t) pickAxis(t.dataset.k); });
+$('shares').addEventListener('click', (e) => { const t = e.target.closest('[data-k]'); if (t) pickAxis(t.dataset.k); });
+$('strip').addEventListener('click', (e) => { const b = e.target.closest('button[data-d]'); if (!b) return; st.w = 'dia'; st.day = b.dataset.d; st.calDay = b.dataset.d; st.month = b.dataset.d.slice(0, 7); renderAll(true); });
+$('windows').addEventListener('click', (e) => { const b = e.target.closest('.win'); if (!b) return; st.mode = 'cal'; st.month = b.dataset.from.slice(0, 7); st.calDay = b.dataset.from; renderAll(true); });
+$('calPrev').addEventListener('click', () => { const [y, m] = st.month.split('-').map(Number); st.month = iso(new Date(y, m - 2, 1, 12)).slice(0, 7); renderCal(); reveal(); });
+$('calNext').addEventListener('click', () => { const [y, m] = st.month.split('-').map(Number); st.month = iso(new Date(y, m, 1, 12)).slice(0, 7); renderCal(); reveal(); });
+$('calToday').addEventListener('click', () => { st.month = TODAY.slice(0, 7); st.calDay = TODAY; renderCal(); reveal(); });
+$('cal').addEventListener('click', (e) => { const b = e.target.closest('.cell'); if (!b) return; st.calDay = b.dataset.d; renderCal(); reveal(); setTimeout(() => $('calDay').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60); });
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-id]');
+  if (t && !e.target.closest('a')) { openDetail(byId(t.dataset.id)); return; }
+  if (e.target.closest('[data-close]') || e.target === $('scrim')) closeDetail();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetail(); });
+$('past').addEventListener('click', () => { st.past = !st.past; renderList(); reveal(); });
+$('exportBtn').addEventListener('click', () => exportPng());
+document.addEventListener('error', (e) => { const img = e.target; if (img.tagName === 'IMG' && !img.dataset.failed) { img.dataset.failed = '1'; img.style.visibility = 'hidden'; } }, true);
 // o HELIOS pode pedir um dia e uma praça sem recarregar a página
-addEventListener('message', (e) => { const m = e.data || {}; if (m.radar !== 'dia') return; if (m.dia) { st.w = 'dia'; st.day = m.dia; } if ('praca' in m) st.place = m.praca || ''; render(); });
+addEventListener('message', (e) => { const m = e.data || {}; if (m.radar !== 'dia') return; if (m.dia) { st.w = 'dia'; st.day = m.dia; st.month = m.dia.slice(0, 7); st.calDay = m.dia; st.mode = 'lista'; } if ('praca' in m) st.place = m.praca || ''; fillControls(); renderAll(true); });
 
 fetch('data/eventos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
   DATA = d;
-  const [y, m, dd] = (d.atualizado || '').split('-');
-  if (y) $('updated').textContent = `Shows, festivais, feriados, provas e jogos · atualizado em ${dd}/${m}/${y}`;
   fillControls();
-  render();
-}).catch(() => { $('list').innerHTML = '<p class="empty">Não consegui carregar os eventos agora. Tente de novo em instantes.</p>'; });
+  renderAll();
+}).catch(() => { $('list').innerHTML = '<p class="empty">Não consegui carregar os eventos agora. Tente de novo em instantes.</p>'; reveal(); });
 </script>
 </body>
 </html>
